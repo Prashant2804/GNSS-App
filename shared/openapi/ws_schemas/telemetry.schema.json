@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TelemetryMessage",
+  "type": "object",
+  "properties": {
+    "fixQuality": { "type": "string" },
+    "satellites": { "type": "integer" },
+    "horizontalAccuracyM": { "type": "number" },
+    "verticalAccuracyM": { "type": "number" },
+    "ageOfDiffSec": { "type": "number" },
+    "updateRateHz": { "type": "number" }
+  },
+  "required": ["fixQuality", "satellites"]
+}

@@ -1,0 +1,74 @@
+openapi: 3.0.3
+info:
+  title: GNSS Flow API
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+  /device/info:
+    get:
+      summary: Device info
+      responses:
+        "200":
+          description: OK
+  /device/config:
+    post:
+      summary: Store device config
+      responses:
+        "200":
+          description: OK
+  /logs/start:
+    post:
+      summary: Start logging session
+      responses:
+        "200":
+          description: OK
+  /logs/stop:
+    post:
+      summary: Stop logging session
+      responses:
+        "200":
+          description: OK
+  /projects:
+    get:
+      summary: List projects
+      responses:
+        "200":
+          description: OK
+    post:
+      summary: Create project
+      responses:
+        "200":
+          description: OK
+  /projects/{project_id}:
+    get:
+      summary: Get project
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not found
+    put:
+      summary: Update project
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not found
+    delete:
+      summary: Delete project
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not found
+  /ws/telemetry:
+    get:
+      summary: Telemetry WebSocket upgrade
+      responses:
+        "101":
+          description: Switching Protocols

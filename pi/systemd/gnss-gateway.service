@@ -1,0 +1,11 @@
+[Unit]
+Description=GNSS Gateway Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python -m uvicorn gnss_gateway.main:app --host 0.0.0.0 --port 8000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

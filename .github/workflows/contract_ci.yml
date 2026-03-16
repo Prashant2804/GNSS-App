@@ -1,0 +1,8 @@
+name: contract_ci
+on: [push, pull_request]
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./scripts/ci/check_openapi.sh

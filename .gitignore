@@ -1,0 +1,15 @@
+.DS_Store
+.idea/
+.vscode/
+.gradle/
+**/build/
+**/.gradle/
+**/.venv/
+**/__pycache__/
+*.pyc
+*.log
+*.apk
+*.keystore
+*.jks
+*.iml
+*.swp

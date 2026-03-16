@@ -1,0 +1,8 @@
+serial_port: /dev/ttyS0
+baud_rate: 115200
+ntrip:
+  host: ""
+  port: 2101
+  mount: ""
+  user: ""
+  password: ""

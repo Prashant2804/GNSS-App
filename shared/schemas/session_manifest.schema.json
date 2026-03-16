@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SessionManifest",
+  "type": "object",
+  "properties": {
+    "sessionId": { "type": "string" },
+    "receiver": { "type": "object" },
+    "startTime": { "type": "string" },
+    "endTime": { "type": "string" }
+  },
+  "required": ["sessionId", "receiver", "startTime"]
+}
