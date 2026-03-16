@@ -33,6 +33,17 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
     }
+
+    compileOptions {
+        // Keep bytecode compatible with Android toolchain defaults.
+        // (Android Gradle Plugin itself still requires running Gradle on JDK 17.)
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
