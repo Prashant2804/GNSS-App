@@ -3,7 +3,7 @@ name = "gnss-gateway"
 version = "0.1.0"
 dependencies = [
   "fastapi",
-  "uvicorn",
+  "uvicorn[standard]",
   "pydantic",
   "pyyaml"
 ]
