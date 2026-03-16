@@ -9,7 +9,14 @@
 *.pyc
 *.log
 *.apk
+*.hprof
 *.keystore
 *.jks
 *.iml
 *.swp
+
+# Android local SDK path
+android/local.properties
+
+# Python packaging metadata (generated)
+**/*.egg-info/
