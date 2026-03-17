@@ -18,15 +18,56 @@ data class HealthResponse(
 data class TelemetryDto(
     val fixQuality: String,
     val satellites: Int,
+    val latitudeDeg: Double?,
+    val longitudeDeg: Double?,
+    val altitudeMSL: Double?,
     val horizontalAccuracyM: Double,
     val verticalAccuracyM: Double?,
     val ageOfDiffSec: Double?,
     val updateRateHz: Double?,
+    val corrections: CorrectionsDto?,
+)
+
+data class CorrectionsDto(
+    val connected: Boolean,
+    val bytesPerSec: Double,
+)
+
+data class NtripConfigDto(
+    val casterHost: String,
+    val casterPort: Int = 2101,
+    val mountPoint: String,
+    val username: String? = null,
+    val password: String? = null,
+)
+
+data class NtripConfigResponse(
+    val config: NtripConfigDto?,
+)
+
+data class StoredResponse(
+    val stored: Boolean,
+)
+
+data class ConnectedResponse(
+    val connected: Boolean,
 )
 
 interface PiApi {
     @GET("health")
     suspend fun health(): HealthResponse
+
+    @GET("ntrip/config")
+    suspend fun getNtripConfig(): NtripConfigResponse
+
+    @retrofit2.http.POST("ntrip/config")
+    suspend fun setNtripConfig(@retrofit2.http.Body payload: NtripConfigDto): StoredResponse
+
+    @retrofit2.http.POST("ntrip/connect")
+    suspend fun ntripConnect(): ConnectedResponse
+
+    @retrofit2.http.POST("ntrip/disconnect")
+    suspend fun ntripDisconnect(): ConnectedResponse
 }
 
 class PiClient(

@@ -5,10 +5,23 @@
   "properties": {
     "fixQuality": { "type": "string" },
     "satellites": { "type": "integer" },
+    "latitudeDeg": { "type": "number" },
+    "longitudeDeg": { "type": "number" },
+    "altitudeMSL": { "type": "number" },
     "horizontalAccuracyM": { "type": "number" },
     "verticalAccuracyM": { "type": "number" },
     "ageOfDiffSec": { "type": "number" },
-    "updateRateHz": { "type": "number" }
+    "updateRateHz": { "type": "number" },
+    "corrections": {
+      "type": "object",
+      "properties": {
+        "connected": { "type": "boolean" },
+        "bytesPerSec": { "type": "number" }
+      },
+      "required": ["connected", "bytesPerSec"],
+      "additionalProperties": false
+    }
   },
-  "required": ["fixQuality", "satellites"]
+  "required": ["fixQuality", "satellites", "latitudeDeg", "longitudeDeg", "altitudeMSL", "corrections"],
+  "additionalProperties": false
 }

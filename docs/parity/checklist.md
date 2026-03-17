@@ -179,7 +179,7 @@ criteria, and test expectations. Update status as work progresses.
   - Hit `http://<pi>:8000/health` in browser or curl.
 - Automated tests:
   - `pi/tests/test_health.py` asserts 200 and status payload.
-- Status: In progress
+- Status: Done
 
 ### P0-WS-TELEMETRY — Telemetry WebSocket
 - Priority: P0
@@ -192,7 +192,7 @@ criteria, and test expectations. Update status as work progresses.
   - Connect with WebSocket client and verify JSON payloads stream.
 - Automated tests:
   - Contract validation via schema lint (manual until tests added).
-- Status: In progress
+- Status: Done
 
 ### P1-ANDROID-CONNECT — Android Connect screen
 - Priority: P1
@@ -204,7 +204,7 @@ criteria, and test expectations. Update status as work progresses.
   - Launch app and verify Connect screen layout.
 - Automated tests:
   - Compose UI test verifies "Connect" view renders.
-- Status: Not started
+- Status: In progress
 
 ### P1-OPENAPI-SCHEMAS — OpenAPI + WS schemas
 - Priority: P1
@@ -230,7 +230,7 @@ criteria, and test expectations. Update status as work progresses.
   - Configure NTRIP details and verify correction age decreases.
 - Automated tests:
   - Unit test for config parsing and NTRIP client connect.
-- Status: Not started
+- Status: In progress
 
 ### P0-FIX-QUALITY — Fix quality indicators
 - Priority: P0
@@ -242,7 +242,7 @@ criteria, and test expectations. Update status as work progresses.
   - Observe telemetry values updating in UI.
 - Automated tests:
   - ViewModel unit test maps telemetry to UI state.
-- Status: Not started
+- Status: In progress
 
 ## Stage 3: Projects + Collect
 
@@ -268,7 +268,7 @@ criteria, and test expectations. Update status as work progresses.
   - Collect a point and verify in project detail.
 - Automated tests:
   - ViewModel test for adding point to project.
-- Status: Not started
+- Status: Done
 
 ### P1-AUTO-COLLECT — Auto-collection rules
 - Priority: P1
@@ -279,7 +279,7 @@ criteria, and test expectations. Update status as work progresses.
   - Enable rule and observe auto-collected points.
 - Automated tests:
   - Unit tests for rule evaluation.
-- Status: Not started
+- Status: Done
 
 ## Stage 4: Stakeout + Lines + Polygons
 

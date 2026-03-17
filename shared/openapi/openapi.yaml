@@ -9,6 +9,29 @@ paths:
       responses:
         "200":
           description: OK
+  /ntrip/config:
+    get:
+      summary: Get NTRIP configuration
+      responses:
+        "200":
+          description: OK
+    post:
+      summary: Store NTRIP configuration
+      responses:
+        "200":
+          description: OK
+  /ntrip/connect:
+    post:
+      summary: Connect to NTRIP caster using stored configuration
+      responses:
+        "200":
+          description: OK
+  /ntrip/disconnect:
+    post:
+      summary: Disconnect from NTRIP caster
+      responses:
+        "200":
+          description: OK
   /device/info:
     get:
       summary: Device info

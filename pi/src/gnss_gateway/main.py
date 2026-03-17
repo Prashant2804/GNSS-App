@@ -26,9 +26,43 @@ class ProjectUpdate(BaseModel):
     name: str
 
 
+class NtripConfig(BaseModel):
+    casterHost: str
+    casterPort: int = 2101
+    mountPoint: str
+    username: str | None = None
+    password: str | None = None
+
+
 @app.get("/health")
 def health() -> JSONResponse:
     return JSONResponse({"status": "ok"})
+
+
+@app.get("/ntrip/config")
+def ntrip_get_config() -> JSONResponse:
+    return JSONResponse({"config": _ntrip.config})
+
+
+@app.post("/ntrip/config")
+def ntrip_set_config(payload: NtripConfig) -> JSONResponse:
+    _ntrip.set_config(payload.model_dump())
+    return JSONResponse({"stored": True})
+
+
+@app.post("/ntrip/connect")
+def ntrip_connect() -> JSONResponse:
+    try:
+        _ntrip.connect()
+        return JSONResponse({"connected": True})
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/ntrip/disconnect")
+def ntrip_disconnect() -> JSONResponse:
+    _ntrip.disconnect()
+    return JSONResponse({"connected": False})
 
 
 @app.get("/device/info")
