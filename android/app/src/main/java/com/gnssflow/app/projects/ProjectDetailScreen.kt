@@ -1,12 +1,6 @@
 package com.gnssflow.app.projects
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -31,8 +25,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,131 +38,127 @@ fun ProjectDetailScreen(
     var autoSeconds by remember { mutableStateOf("5") }
     var autoDistance by remember { mutableStateOf("1.0") }
     val listState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(uiState.autoCollectMinSeconds, uiState.autoCollectMinDistanceM) {
         autoSeconds = uiState.autoCollectMinSeconds.toString()
         autoDistance = uiState.autoCollectMinDistanceM.toString()
     }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = listState,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        item {
-            TopAppBar(
-                title = { Text("Project") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) { Text("Back") }
-                },
-            )
-        }
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            title = { Text("Project") },
+            navigationIcon = {
+                IconButton(onClick = onBack) { Text("Back") }
+            },
+        )
 
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(text = "Auto-collect", style = MaterialTheme.typography.titleMedium)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(text = "Auto-collect", style = MaterialTheme.typography.titleMedium)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(text = if (uiState.autoCollectEnabled) "Enabled" else "Disabled")
-                    Switch(
-                        checked = uiState.autoCollectEnabled,
-                        onCheckedChange = { checked ->
-                            val s = autoSeconds.toIntOrNull() ?: uiState.autoCollectMinSeconds
-                            val d = autoDistance.toDoubleOrNull() ?: uiState.autoCollectMinDistanceM
-                            vm.setAutoCollect(projectId, checked, s, d)
-                        },
-                    )
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedTextField(
-                        value = autoSeconds,
-                        onValueChange = { autoSeconds = it },
-                        label = { Text("Min seconds") },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f),
-                    )
-                    OutlinedTextField(
-                        value = autoDistance,
-                        onValueChange = { autoDistance = it },
-                        label = { Text("Min distance (m)") },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-                Button(
-                    onClick = {
+                Text(text = if (uiState.autoCollectEnabled) "Enabled" else "Disabled")
+                Switch(
+                    checked = uiState.autoCollectEnabled,
+                    onCheckedChange = { checked ->
                         val s = autoSeconds.toIntOrNull() ?: uiState.autoCollectMinSeconds
                         val d = autoDistance.toDoubleOrNull() ?: uiState.autoCollectMinDistanceM
-                        vm.setAutoCollect(projectId, uiState.autoCollectEnabled, s, d)
+                        vm.setAutoCollect(projectId, checked, s, d)
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Save auto-collect settings")
-                }
-
-                HorizontalDivider()
-
-                Text(text = "Collect point", style = MaterialTheme.typography.titleMedium)
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedTextField(
-                        value = code,
-                        onValueChange = { code = it },
-                        label = { Text("Code") },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Button(
-                        onClick = {
-                            vm.collect(projectId, code)
-                            scope.launch { listState.animateScrollToItem(0) }
-                        },
-                        enabled = uiState.canCollect,
-                    ) {
-                        Text("Collect")
-                    }
-                }
-                if (!uiState.canCollect) {
-                    Text(
-                        text = "Connect to Pi to get position before collecting.",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-
-                HorizontalDivider()
-                Text(text = "Points", style = MaterialTheme.typography.titleMedium)
+                )
             }
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = autoSeconds,
+                    onValueChange = { autoSeconds = it },
+                    label = { Text("Min seconds") },
+                    singleLine = true,
+                    modifier = Modifier.weight(1f),
+                )
+                OutlinedTextField(
+                    value = autoDistance,
+                    onValueChange = { autoDistance = it },
+                    label = { Text("Min distance (m)") },
+                    singleLine = true,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            Button(
+                onClick = {
+                    val s = autoSeconds.toIntOrNull() ?: uiState.autoCollectMinSeconds
+                    val d = autoDistance.toDoubleOrNull() ?: uiState.autoCollectMinDistanceM
+                    vm.setAutoCollect(projectId, uiState.autoCollectEnabled, s, d)
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text("Save auto-collect settings")
+            }
+
+            HorizontalDivider()
+
+            Text(text = "Collect point", style = MaterialTheme.typography.titleMedium)
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = code,
+                    onValueChange = { code = it },
+                    label = { Text("Code") },
+                    singleLine = true,
+                    modifier = Modifier.weight(1f),
+                )
+                Button(
+                    onClick = { vm.collect(projectId, code) },
+                    enabled = uiState.canCollect,
+                ) {
+                    Text("Collect")
+                }
+            }
+            if (!uiState.canCollect) {
+                Text(
+                    text = "Connect to Pi to get position before collecting.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+
+            HorizontalDivider()
+            Text(text = "Points", style = MaterialTheme.typography.titleMedium)
         }
 
-        items(uiState.points, key = { it.id }) { p ->
-            Surface(
-                tonalElevation = 1.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-            ) {
-                Column(
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            state = listState,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            items(uiState.points, key = { it.id }) { p ->
+                Surface(
+                    tonalElevation = 1.dp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                        .padding(horizontal = 16.dp),
                 ) {
-                    Text(text = p.code, style = MaterialTheme.typography.titleLarge)
-                    Text(text = "Lat: ${p.latitudeDeg}")
-                    Text(text = "Lon: ${p.longitudeDeg}")
-                    Text(text = "Alt: ${p.altitudeMSL} m")
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Text(text = p.code, style = MaterialTheme.typography.titleLarge)
+                        Text(text = "Lat: ${p.latitudeDeg}")
+                        Text(text = "Lon: ${p.longitudeDeg}")
+                        Text(text = "Alt: ${p.altitudeMSL} m")
+                    }
                 }
             }
-        }
 
-        item { Spacer(modifier = Modifier.height(24.dp)) }
+            item { Spacer(modifier = Modifier.height(24.dp)) }
+        }
     }
 }
 
