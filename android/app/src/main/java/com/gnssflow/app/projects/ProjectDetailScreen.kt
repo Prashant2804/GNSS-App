@@ -31,6 +31,9 @@ import androidx.compose.material3.HorizontalDivider
 fun ProjectDetailScreen(
     projectId: String,
     onBack: () -> Unit,
+    onStakeoutPoint: (String) -> Unit,
+    onOpenLines: () -> Unit,
+    onOpenPolygons: () -> Unit,
     vm: ProjectDetailViewModel = viewModel(),
 ) {
     val uiState by vm.uiState(projectId).collectAsState()
@@ -58,6 +61,13 @@ fun ProjectDetailScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            Button(onClick = onOpenLines, modifier = Modifier.fillMaxWidth()) {
+                Text("Lines & offsets")
+            }
+            Button(onClick = onOpenPolygons, modifier = Modifier.fillMaxWidth()) {
+                Text("Polygons (area/perimeter)")
+            }
+
             Text(text = "Auto-collect", style = MaterialTheme.typography.titleMedium)
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -149,10 +159,21 @@ fun ProjectDetailScreen(
                             .padding(12.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        Text(text = p.code, style = MaterialTheme.typography.titleLarge)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(text = p.code, style = MaterialTheme.typography.titleLarge)
+                            Button(onClick = { onStakeoutPoint(p.id) }) {
+                                Text("Navigate")
+                            }
+                        }
                         Text(text = "Lat: ${p.latitudeDeg}")
                         Text(text = "Lon: ${p.longitudeDeg}")
                         Text(text = "Alt: ${p.altitudeMSL} m")
+                        if (p.imuRollDeg != null && p.imuPitchDeg != null && p.imuYawDeg != null) {
+                            Text(text = "IMU: R ${"%.1f°".format(p.imuRollDeg)}  P ${"%.1f°".format(p.imuPitchDeg)}  Y ${"%.1f°".format(p.imuYawDeg)}")
+                        }
                     }
                 }
             }

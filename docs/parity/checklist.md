@@ -292,7 +292,7 @@ criteria, and test expectations. Update status as work progresses.
   - Select target and verify guidance updates as telemetry changes.
 - Automated tests:
   - Unit tests for offset calculations.
-- Status: Not started
+- Status: Done
 
 ### P1-LINES — Lines and offsets
 - Priority: P1
@@ -303,7 +303,7 @@ criteria, and test expectations. Update status as work progresses.
   - Build a line, select a point, check offset output.
 - Automated tests:
   - Geometry unit tests for line calculations.
-- Status: Not started
+- Status: Done
 
 ### P1-POLYGONS — Polygon area/perimeter
 - Priority: P1
@@ -314,7 +314,7 @@ criteria, and test expectations. Update status as work progresses.
   - Add polygon points and verify metrics.
 - Automated tests:
   - Geometry unit tests for polygon area.
-- Status: Not started
+- Status: Done
 
 ## Stage 5: COGO Tools
 

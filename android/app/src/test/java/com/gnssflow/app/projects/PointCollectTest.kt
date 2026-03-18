@@ -15,6 +15,8 @@ private class CapturingPointDao : PointDao {
 
     override fun observeByProject(projectId: String): Flow<List<PointEntity>> = MutableStateFlow(emptyList())
 
+    override fun observeById(pointId: String): Flow<PointEntity?> = MutableStateFlow(null)
+
     override suspend fun getLatestByProject(projectId: String): PointEntity? = inserted.lastOrNull()
 
     override suspend fun insert(entity: PointEntity) {
@@ -44,6 +46,7 @@ class PointCollectTest {
             latitudeDeg = 12.0,
             longitudeDeg = 77.0,
             altitudeMSL = 900.0,
+            imu = null,
             horizontalAccuracyM = 0.5,
             verticalAccuracyM = null,
             ageOfDiffSec = null,
@@ -60,6 +63,9 @@ class PointCollectTest {
         assertEquals(12.0, p.latitudeDeg, 0.000001)
         assertEquals(77.0, p.longitudeDeg, 0.000001)
         assertEquals(900.0, p.altitudeMSL, 0.000001)
+        assertEquals(null, p.imuRollDeg)
+        assertEquals(null, p.imuPitchDeg)
+        assertEquals(null, p.imuYawDeg)
         assertEquals(1234L, p.createdAtEpochMs)
     }
 }

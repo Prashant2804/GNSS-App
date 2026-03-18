@@ -32,6 +32,17 @@ paths:
       responses:
         "200":
           description: OK
+  /imu/enabled:
+    get:
+      summary: Get IMU enabled flag
+      responses:
+        "200":
+          description: OK
+    post:
+      summary: Set IMU enabled flag
+      responses:
+        "200":
+          description: OK
   /device/info:
     get:
       summary: Device info

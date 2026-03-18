@@ -36,3 +36,18 @@ def test_ntrip_config_roundtrip_and_connect_disconnect() -> None:
     assert disc.status_code == 200
     assert disc.json()["connected"] is False
 
+
+def test_imu_enable_toggle() -> None:
+    client = TestClient(app)
+    get0 = client.get("/imu/enabled")
+    assert get0.status_code == 200
+    assert "enabled" in get0.json()
+
+    set1 = client.post("/imu/enabled", json={"enabled": True})
+    assert set1.status_code == 200
+    assert set1.json()["enabled"] is True
+
+    get1 = client.get("/imu/enabled")
+    assert get1.status_code == 200
+    assert get1.json()["enabled"] is True
+

@@ -6,7 +6,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "points",
+    tableName = "lines",
     foreignKeys = [
         ForeignKey(
             entity = ProjectEntity::class,
@@ -20,17 +20,12 @@ import androidx.room.PrimaryKey
         Index(value = ["projectId", "createdAtEpochMs"]),
     ],
 )
-data class PointEntity(
+data class LineEntity(
     @PrimaryKey val id: String,
     val projectId: String,
-    val code: String,
-    val latitudeDeg: Double,
-    val longitudeDeg: Double,
-    val altitudeMSL: Double,
-    val imuRollDeg: Double?,
-    val imuPitchDeg: Double?,
-    val imuYawDeg: Double?,
-    val horizontalAccuracyM: Double?,
+    val name: String,
+    val aPointId: String,
+    val bPointId: String,
     val createdAtEpochMs: Long,
 )
 

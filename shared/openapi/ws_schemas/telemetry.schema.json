@@ -8,6 +8,16 @@
     "latitudeDeg": { "type": "number" },
     "longitudeDeg": { "type": "number" },
     "altitudeMSL": { "type": "number" },
+    "imu": {
+      "type": "object",
+      "properties": {
+        "rollDeg": { "type": "number" },
+        "pitchDeg": { "type": "number" },
+        "yawDeg": { "type": "number" }
+      },
+      "required": ["rollDeg", "pitchDeg", "yawDeg"],
+      "additionalProperties": false
+    },
     "horizontalAccuracyM": { "type": "number" },
     "verticalAccuracyM": { "type": "number" },
     "ageOfDiffSec": { "type": "number" },

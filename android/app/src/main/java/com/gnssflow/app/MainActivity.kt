@@ -14,6 +14,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gnssflow.app.projects.ProjectDetailScreen
 import com.gnssflow.app.projects.ProjectsScreen
+import com.gnssflow.app.projects.LinesScreen
+import com.gnssflow.app.projects.PolygonsScreen
+import com.gnssflow.app.projects.StakeoutScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +35,30 @@ class MainActivity : ComponentActivity() {
                             val projectId = route.removePrefix("project:")
                             ProjectDetailScreen(
                                 projectId = projectId,
+                                onBack = { route = "projects" },
+                                onStakeoutPoint = { pointId -> route = "stakeout:$pointId" },
+                                onOpenLines = { route = "lines:$projectId" },
+                                onOpenPolygons = { route = "polygons:$projectId" },
+                            )
+                        }
+                        route.startsWith("lines:") -> {
+                            val projectId = route.removePrefix("lines:")
+                            LinesScreen(
+                                projectId = projectId,
+                                onBack = { route = "project:$projectId" },
+                            )
+                        }
+                        route.startsWith("polygons:") -> {
+                            val projectId = route.removePrefix("polygons:")
+                            PolygonsScreen(
+                                projectId = projectId,
+                                onBack = { route = "project:$projectId" },
+                            )
+                        }
+                        route.startsWith("stakeout:") -> {
+                            val pointId = route.removePrefix("stakeout:")
+                            StakeoutScreen(
+                                pointId = pointId,
                                 onBack = { route = "projects" },
                             )
                         }
@@ -66,6 +93,20 @@ fun ConnectScreen(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text("Projects")
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(text = "IMU (roll/pitch/yaw)")
+                        Switch(
+                            checked = state.imuEnabled,
+                            onCheckedChange = { vm.setImuEnabled(it) },
+                        )
+                    }
+                    if (state.imuStatus != null) {
+                        Text(text = state.imuStatus!!)
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -136,6 +177,12 @@ fun ConnectScreen(
                 if (corr != null) {
                     Text(text = "Corrections: ${if (corr.connected) "Connected" else "Disconnected"}")
                     Text(text = "RTCM: ${corr.bytesPerSec} B/s")
+                }
+                val imu = telemetry.imu
+                if (imu != null) {
+                    Text(text = "Roll: ${"%.1f°".format(imu.rollDeg)}")
+                    Text(text = "Pitch: ${"%.1f°".format(imu.pitchDeg)}")
+                    Text(text = "Yaw: ${"%.1f°".format(imu.yawDeg)}")
                 }
             } else {
                 Text(text = "No telemetry yet")

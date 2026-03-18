@@ -16,6 +16,7 @@ from .projects_store import (
 
 app = FastAPI()
 _ntrip = NtripClient()
+_imu_enabled = False
 
 
 class ProjectCreate(BaseModel):
@@ -32,6 +33,10 @@ class NtripConfig(BaseModel):
     mountPoint: str
     username: str | None = None
     password: str | None = None
+
+
+class ImuEnabled(BaseModel):
+    enabled: bool
 
 
 @app.get("/health")
@@ -63,6 +68,18 @@ def ntrip_connect() -> JSONResponse:
 def ntrip_disconnect() -> JSONResponse:
     _ntrip.disconnect()
     return JSONResponse({"connected": False})
+
+
+@app.get("/imu/enabled")
+def imu_get_enabled() -> JSONResponse:
+    return JSONResponse({"enabled": _imu_enabled})
+
+
+@app.post("/imu/enabled")
+def imu_set_enabled(payload: ImuEnabled) -> JSONResponse:
+    global _imu_enabled
+    _imu_enabled = payload.enabled
+    return JSONResponse({"enabled": _imu_enabled})
 
 
 @app.get("/device/info")
@@ -124,7 +141,7 @@ def projects_delete(project_id: str) -> JSONResponse:
 async def ws_telemetry(websocket: WebSocket) -> None:
     await websocket.accept()
     while True:
-        telemetry = build_mock_telemetry()
+        telemetry = build_mock_telemetry(imu_enabled=_imu_enabled)
         telemetry["corrections"]["connected"] = _ntrip.connected
         telemetry["corrections"]["bytesPerSec"] = _ntrip.bytes_per_sec
         await websocket.send_json(telemetry)

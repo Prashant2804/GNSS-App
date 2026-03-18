@@ -4,7 +4,7 @@ import math
 _t = 0
 
 
-def build_mock_telemetry() -> dict:
+def build_mock_telemetry(*, imu_enabled: bool = False) -> dict:
     global _t
     _t += 1
     # Deterministic circular path around a fixed point (for easy validation).
@@ -15,7 +15,7 @@ def build_mock_telemetry() -> dict:
     angle = (_t % 360) * math.pi / 180.0
     lat = center_lat + radius_deg * math.cos(angle)
     lon = center_lon + radius_deg * math.sin(angle)
-    return {
+    telemetry = {
         "fixQuality": "fix",
         "satellites": 8,
         "latitudeDeg": lat,
@@ -27,3 +27,12 @@ def build_mock_telemetry() -> dict:
         "updateRateHz": 1.0,
         "corrections": {"connected": False, "bytesPerSec": 0},
     }
+
+    if imu_enabled:
+        telemetry["imu"] = {
+            "rollDeg": 5.0 * math.sin(angle),
+            "pitchDeg": 3.0 * math.cos(angle),
+            "yawDeg": (_t % 360),
+        }
+
+    return telemetry

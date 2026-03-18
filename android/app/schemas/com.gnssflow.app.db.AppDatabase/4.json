@@ -1,0 +1,182 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 4,
+    "identityHash": "cd6545c2a4b7d4eab1e30a74b68f1475",
+    "entities": [
+      {
+        "tableName": "projects",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `createdAtEpochMs` INTEGER NOT NULL, `updatedAtEpochMs` INTEGER NOT NULL, `autoCollectEnabled` INTEGER NOT NULL, `autoCollectMinSeconds` INTEGER NOT NULL, `autoCollectMinDistanceM` REAL NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAtEpochMs",
+            "columnName": "createdAtEpochMs",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAtEpochMs",
+            "columnName": "updatedAtEpochMs",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "autoCollectEnabled",
+            "columnName": "autoCollectEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "autoCollectMinSeconds",
+            "columnName": "autoCollectMinSeconds",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "autoCollectMinDistanceM",
+            "columnName": "autoCollectMinDistanceM",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "points",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `projectId` TEXT NOT NULL, `code` TEXT NOT NULL, `latitudeDeg` REAL NOT NULL, `longitudeDeg` REAL NOT NULL, `altitudeMSL` REAL NOT NULL, `imuRollDeg` REAL, `imuPitchDeg` REAL, `imuYawDeg` REAL, `horizontalAccuracyM` REAL, `createdAtEpochMs` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`projectId`) REFERENCES `projects`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "projectId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "code",
+            "columnName": "code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitudeDeg",
+            "columnName": "latitudeDeg",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitudeDeg",
+            "columnName": "longitudeDeg",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "altitudeMSL",
+            "columnName": "altitudeMSL",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imuRollDeg",
+            "columnName": "imuRollDeg",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "imuPitchDeg",
+            "columnName": "imuPitchDeg",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "imuYawDeg",
+            "columnName": "imuYawDeg",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "horizontalAccuracyM",
+            "columnName": "horizontalAccuracyM",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAtEpochMs",
+            "columnName": "createdAtEpochMs",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_points_projectId",
+            "unique": false,
+            "columnNames": [
+              "projectId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_points_projectId` ON `${TABLE_NAME}` (`projectId`)"
+          },
+          {
+            "name": "index_points_projectId_createdAtEpochMs",
+            "unique": false,
+            "columnNames": [
+              "projectId",
+              "createdAtEpochMs"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_points_projectId_createdAtEpochMs` ON `${TABLE_NAME}` (`projectId`, `createdAtEpochMs`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "projects",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "projectId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cd6545c2a4b7d4eab1e30a74b68f1475')"
+    ]
+  }
+}

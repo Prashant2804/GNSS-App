@@ -29,6 +29,8 @@ data class ConnectUiState(
     val ntripUsername: String = "",
     val ntripPassword: String = "",
     val ntripStatus: String? = null,
+    val imuEnabled: Boolean = false,
+    val imuStatus: String? = null,
 )
 
 class ConnectViewModel : ViewModel() {
@@ -130,6 +132,25 @@ class ConnectViewModel : ViewModel() {
             } catch (t: Throwable) {
                 _uiState.value = _uiState.value.copy(
                     ntripStatus = "NTRIP error: ${t.message ?: t::class.simpleName.orEmpty()}",
+                )
+            }
+        }
+    }
+
+    fun setImuEnabled(enabled: Boolean) {
+        val baseUrl = _uiState.value.baseUrl
+        val client = PiClient(baseUrl)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val resp = client.api.setImuEnabled(com.gnssflow.app.network.EnabledResponse(enabled))
+                _uiState.value = _uiState.value.copy(
+                    imuEnabled = resp.enabled,
+                    imuStatus = if (resp.enabled) "IMU enabled" else "IMU disabled",
+                )
+            } catch (t: Throwable) {
+                _uiState.value = _uiState.value.copy(
+                    imuStatus = "IMU error: ${t.message ?: t::class.simpleName.orEmpty()}",
                 )
             }
         }

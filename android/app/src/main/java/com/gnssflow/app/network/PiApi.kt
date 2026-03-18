@@ -21,11 +21,18 @@ data class TelemetryDto(
     val latitudeDeg: Double?,
     val longitudeDeg: Double?,
     val altitudeMSL: Double?,
+    val imu: ImuDto?,
     val horizontalAccuracyM: Double,
     val verticalAccuracyM: Double?,
     val ageOfDiffSec: Double?,
     val updateRateHz: Double?,
     val corrections: CorrectionsDto?,
+)
+
+data class ImuDto(
+    val rollDeg: Double,
+    val pitchDeg: Double,
+    val yawDeg: Double,
 )
 
 data class CorrectionsDto(
@@ -53,6 +60,10 @@ data class ConnectedResponse(
     val connected: Boolean,
 )
 
+data class EnabledResponse(
+    val enabled: Boolean,
+)
+
 interface PiApi {
     @GET("health")
     suspend fun health(): HealthResponse
@@ -68,6 +79,12 @@ interface PiApi {
 
     @retrofit2.http.POST("ntrip/disconnect")
     suspend fun ntripDisconnect(): ConnectedResponse
+
+    @GET("imu/enabled")
+    suspend fun getImuEnabled(): EnabledResponse
+
+    @retrofit2.http.POST("imu/enabled")
+    suspend fun setImuEnabled(@retrofit2.http.Body payload: EnabledResponse): EnabledResponse
 }
 
 class PiClient(

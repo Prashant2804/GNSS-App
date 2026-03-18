@@ -79,6 +79,7 @@ class ProjectsRepository(
 
         val trimmedCode = code.trim().ifEmpty { "PT" }
         val id = UUID.randomUUID().toString()
+        val imu = telemetry.imu
         pointDao.insert(
             PointEntity(
                 id = id,
@@ -87,6 +88,9 @@ class ProjectsRepository(
                 latitudeDeg = lat,
                 longitudeDeg = lon,
                 altitudeMSL = alt,
+                imuRollDeg = imu?.rollDeg,
+                imuPitchDeg = imu?.pitchDeg,
+                imuYawDeg = imu?.yawDeg,
                 horizontalAccuracyM = telemetry.horizontalAccuracyM,
                 createdAtEpochMs = nowEpochMs,
             ),

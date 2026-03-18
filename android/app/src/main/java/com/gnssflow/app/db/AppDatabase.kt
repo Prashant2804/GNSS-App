@@ -6,13 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [ProjectEntity::class, PointEntity::class],
-    version = 3,
+    entities = [ProjectEntity::class, PointEntity::class, LineEntity::class, PolygonEntity::class],
+    version = 6,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun projectDao(): ProjectDao
     abstract fun pointDao(): PointDao
+    abstract fun lineDao(): LineDao
+    abstract fun polygonDao(): PolygonDao
 
     companion object {
         @Volatile private var instance: AppDatabase? = null
