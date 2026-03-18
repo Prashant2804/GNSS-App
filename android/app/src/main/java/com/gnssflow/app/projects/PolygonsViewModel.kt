@@ -27,10 +27,20 @@ class PolygonsViewModel(app: Application) : AndroidViewModel(app) {
     private val points = db.pointDao()
     private val polygons = db.polygonDao()
 
-    private val selected = MutableStateFlow<List<String>>(emptyList())
+    private data class PerProject(
+        val selected: MutableStateFlow<List<String>>,
+        val ui: StateFlow<PolygonsUiState>,
+    )
+
+    private val cache = LinkedHashMap<String, PerProject>()
 
     fun uiState(projectId: String): StateFlow<PolygonsUiState> {
-        return combine(
+        val existing = cache[projectId]
+        if (existing != null) return existing.ui
+
+        val selected = MutableStateFlow<List<String>>(emptyList())
+
+        val ui = combine(
             points.observeByProject(projectId),
             polygons.observeByProject(projectId),
             selected,
@@ -46,20 +56,25 @@ class PolygonsViewModel(app: Application) : AndroidViewModel(app) {
                 perimeterM = ap.perimeterM,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), PolygonsUiState())
+
+        val per = PerProject(selected = selected, ui = ui)
+        cache[projectId] = per
+        return ui
     }
 
-    fun toggleVertex(id: String) {
-        val cur = selected.value.toMutableList()
+    fun toggleVertex(projectId: String, id: String) {
+        val sel = cache[projectId]?.selected ?: return
+        val cur = sel.value.toMutableList()
         if (cur.contains(id)) cur.remove(id) else cur.add(id)
-        selected.value = cur
+        sel.value = cur
     }
 
-    fun clearSelection() {
-        selected.value = emptyList()
+    fun clearSelection(projectId: String) {
+        cache[projectId]?.selected?.value = emptyList()
     }
 
     fun savePolygon(projectId: String, name: String = "Polygon") {
-        val ids = selected.value
+        val ids = cache[projectId]?.selected?.value ?: return
         if (ids.size < 3) return
         viewModelScope.launch {
             polygons.insert(
@@ -72,6 +87,11 @@ class PolygonsViewModel(app: Application) : AndroidViewModel(app) {
                 ),
             )
         }
+    }
+
+    fun usePolygon(projectId: String, polygon: PolygonEntity) {
+        val ids = polygon.vertexPointIdsCsv.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        cache[projectId]?.selected?.value = ids
     }
 }
 

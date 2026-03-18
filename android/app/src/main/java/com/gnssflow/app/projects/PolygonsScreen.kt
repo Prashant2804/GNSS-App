@@ -20,6 +20,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -32,7 +33,8 @@ fun PolygonsScreen(
     onBack: () -> Unit,
     vm: PolygonsViewModel = viewModel(),
 ) {
-    val state by vm.uiState(projectId).collectAsState()
+    val flow = remember(projectId) { vm.uiState(projectId) }
+    val state by flow.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -55,16 +57,30 @@ fun PolygonsScreen(
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(onClick = { vm.clearSelection() }, modifier = Modifier.weight(1f)) { Text("Clear") }
+                Button(onClick = { vm.clearSelection(projectId) }, modifier = Modifier.weight(1f)) { Text("Clear") }
                 Button(
-                    onClick = { vm.savePolygon(projectId) },
+                    onClick = { vm.savePolygon(projectId, name = "Polygon ${state.polygons.size + 1}") },
                     enabled = state.selectedVertexIds.size >= 3,
                     modifier = Modifier.weight(1f),
                 ) { Text("Save") }
             }
 
             if (state.polygons.isNotEmpty()) {
-                Text("Saved polygons: ${state.polygons.size}", style = MaterialTheme.typography.titleMedium)
+                Text("Saved polygons", style = MaterialTheme.typography.titleMedium)
+                for (poly in state.polygons.take(5)) {
+                    val count = poly.vertexPointIdsCsv.split(",").count { it.trim().isNotEmpty() }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(text = poly.name)
+                            Text(text = "Vertices: $count", style = MaterialTheme.typography.bodySmall)
+                        }
+                        Button(onClick = { vm.usePolygon(projectId, poly) }) { Text("Use") }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -97,7 +113,7 @@ fun PolygonsScreen(
                             Text(text = "Lat: ${p.latitudeDeg}")
                             Text(text = "Lon: ${p.longitudeDeg}")
                         }
-                        Button(onClick = { vm.toggleVertex(p.id) }) {
+                        Button(onClick = { vm.toggleVertex(projectId, p.id) }) {
                             Text(if (selected) "Remove" else "Add")
                         }
                     }

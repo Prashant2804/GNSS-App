@@ -36,6 +36,9 @@ fun LinesScreen(
     val flow = remember(projectId) { vm.uiState(projectId) }
     val state by flow.collectAsState()
 
+    val aPoint = state.selectedAId?.let { id -> state.points.firstOrNull { it.id == id } }
+    val bPoint = state.selectedBId?.let { id -> state.points.firstOrNull { it.id == id } }
+
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Lines") },
@@ -55,8 +58,8 @@ fun LinesScreen(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     Text("Live station/offset", style = MaterialTheme.typography.titleMedium)
-                    Text("A: ${state.selectedAId ?: "—"}")
-                    Text("B: ${state.selectedBId ?: "—"}")
+                    Text("A: ${aPoint?.code ?: "—"}")
+                    Text("B: ${bPoint?.code ?: "—"}")
                     Text("Station: ${so?.let { "%.2f m".format(it.stationM) } ?: "—"}")
                     Text("Offset: ${so?.let { "%.2f m".format(it.offsetM) } ?: "—"}")
                 }
@@ -66,7 +69,10 @@ fun LinesScreen(
                 onClick = {
                     val a = state.selectedAId ?: return@Button
                     val b = state.selectedBId ?: return@Button
-                    vm.createLine(projectId, a, b)
+                    val aCode = aPoint?.code ?: "A"
+                    val bCode = bPoint?.code ?: "B"
+                    val name = "Line $aCode→$bCode (${state.lines.size + 1})"
+                    vm.createLine(projectId, a, b, name)
                 },
                 enabled = state.selectedAId != null && state.selectedBId != null,
                 modifier = Modifier.fillMaxWidth(),

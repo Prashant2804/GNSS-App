@@ -91,13 +91,13 @@ class LinesViewModel(app: Application) : AndroidViewModel(app) {
         cache[projectId]?.selectedB?.value = line.bPointId
     }
 
-    fun createLine(projectId: String, aId: String, bId: String) {
+    fun createLine(projectId: String, aId: String, bId: String, name: String) {
         viewModelScope.launch {
             lines.insert(
                 LineEntity(
                     id = UUID.randomUUID().toString(),
                     projectId = projectId,
-                    name = "Line",
+                    name = name,
                     aPointId = aId,
                     bPointId = bId,
                     createdAtEpochMs = System.currentTimeMillis(),
