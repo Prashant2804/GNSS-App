@@ -27,6 +27,7 @@ data class TelemetryDto(
     val ageOfDiffSec: Double?,
     val updateRateHz: Double?,
     val corrections: CorrectionsDto?,
+    val rawObservation: RawObservationDto? = null,
 )
 
 data class ImuDto(
@@ -64,6 +65,24 @@ data class EnabledResponse(
     val enabled: Boolean,
 )
 
+data class SatObservationDto(
+    val gnss_id: String,
+    val sv_id: Int,
+    val signal: String,
+    val pseudorange_m: Double?,
+    val carrier_phase_cycles: Double?,
+    val doppler_hz: Double?,
+    val cno_dbhz: Double,
+)
+
+data class RawObservationDto(
+    val timestamp_utc: String,
+    val gps_week: Int,
+    val gps_tow_s: Double,
+    val receiver_clock_bias_s: Double,
+    val satellites: List<SatObservationDto>,
+)
+
 interface PiApi {
     @GET("health")
     suspend fun health(): HealthResponse
@@ -85,6 +104,18 @@ interface PiApi {
 
     @retrofit2.http.POST("imu/enabled")
     suspend fun setImuEnabled(@retrofit2.http.Body payload: EnabledResponse): EnabledResponse
+
+    @retrofit2.http.POST("observations/start")
+    suspend fun startObservations(): Map<String, Any>
+
+    @retrofit2.http.POST("observations/stop")
+    suspend fun stopObservations(): Map<String, Any>
+
+    @GET("observations/status")
+    suspend fun observationStatus(): Map<String, Any>
+
+    @GET("observations/rinex")
+    suspend fun downloadRinex(@retrofit2.http.Query("marker") marker: String = "GNSSFLOW"): okhttp3.ResponseBody
 }
 
 class PiClient(

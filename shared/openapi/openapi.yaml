@@ -100,6 +100,44 @@ paths:
           description: OK
         "404":
           description: Not found
+  /observations/start:
+    post:
+      summary: Start recording raw GNSS observation epochs
+      responses:
+        "200":
+          description: OK
+  /observations/stop:
+    post:
+      summary: Stop recording raw observation epochs
+      responses:
+        "200":
+          description: OK
+  /observations/status:
+    get:
+      summary: Get recording status and epoch count
+      responses:
+        "200":
+          description: OK
+  /observations/rinex:
+    get:
+      summary: Download recorded observations as RINEX 3.04 file
+      parameters:
+        - name: marker
+          in: query
+          schema:
+            type: string
+            default: GNSSFLOW
+      responses:
+        "200":
+          description: RINEX file content
+        "404":
+          description: No epochs recorded
+  /observations:
+    delete:
+      summary: Clear all recorded observation epochs
+      responses:
+        "200":
+          description: OK
   /ws/telemetry:
     get:
       summary: Telemetry WebSocket upgrade

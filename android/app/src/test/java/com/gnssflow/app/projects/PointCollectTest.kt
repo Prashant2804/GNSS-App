@@ -19,6 +19,8 @@ private class CapturingPointDao : PointDao {
 
     override suspend fun getLatestByProject(projectId: String): PointEntity? = inserted.lastOrNull()
 
+    override suspend fun getById(pointId: String): PointEntity? = inserted.firstOrNull { it.id == pointId }
+
     override suspend fun insert(entity: PointEntity) {
         inserted.add(entity)
     }

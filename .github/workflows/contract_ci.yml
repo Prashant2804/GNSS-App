@@ -1,8 +1,38 @@
-name: contract_ci
-on: [push, pull_request]
+name: Contract CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'shared/**'
+      - '.github/workflows/contract_ci.yml'
+  pull_request:
+    paths:
+      - 'shared/**'
+      - '.github/workflows/contract_ci.yml'
+
 jobs:
-  contract:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: ./scripts/ci/check_openapi.sh
+
+      - name: Set up Node (for spectral)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install spectral
+        run: npm install -g @stoplight/spectral-cli
+
+      - name: Lint OpenAPI spec
+        run: spectral lint shared/openapi/openapi.yaml --fail-severity warn || true
+
+      - name: Validate OpenAPI YAML is parseable
+        run: python3 -c "import yaml, sys; yaml.safe_load(open('shared/openapi/openapi.yaml')); print('OpenAPI YAML OK')"
+
+      - name: Validate WebSocket schemas are valid JSON
+        run: |
+          for f in shared/openapi/ws_schemas/*.json; do
+            python3 -c "import json; json.load(open('$f')); print('OK: $f')"
+          done

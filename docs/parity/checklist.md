@@ -327,7 +327,7 @@ criteria, and test expectations. Update status as work progresses.
   - Select two points and verify output.
 - Automated tests:
   - Unit tests for inverse computations.
-- Status: Not started
+- Status: Done
 
 ### P1-COGO-TRAVERSE — Traverse tool
 - Priority: P1
@@ -338,7 +338,7 @@ criteria, and test expectations. Update status as work progresses.
   - Enter traverse legs and check closure.
 - Automated tests:
   - Unit tests for traverse calculations.
-- Status: Not started
+- Status: Done
 
 ### P2-COGO-INTERSECTION — Intersection tool
 - Priority: P2
@@ -349,7 +349,7 @@ criteria, and test expectations. Update status as work progresses.
   - Provide lines and verify intersection point.
 - Automated tests:
   - Unit tests for intersection math.
-- Status: Not started
+- Status: Done
 
 ## Stage 6: Import/Export + Demo Kit
 
@@ -362,7 +362,7 @@ criteria, and test expectations. Update status as work progresses.
   - Export a project and open files.
 - Automated tests:
   - Unit tests for export adapters.
-- Status: Not started
+- Status: Done (CSV, KML, DXF, RINEX implemented with share/download)
 
 ### P1-DEMO-BUNDLE — Demo bundle + replay
 - Priority: P1
@@ -422,7 +422,7 @@ criteria, and test expectations. Update status as work progresses.
   - Run each tool and verify output values.
 - Automated tests:
   - Unit tests for each tool.
-- Status: Not started
+- Status: Done (Point Averaging + Resection)
 
 ### P2-STAKEOUT-REPORTS — Stakeout reports
 - Priority: P2
@@ -433,7 +433,7 @@ criteria, and test expectations. Update status as work progresses.
   - Generate a report and verify fields.
 - Automated tests:
   - Unit tests for report formatting.
-- Status: Not started
+- Status: Done (Save Reading + Export CSV/Text from stakeout)
 
 ## Stage 9: Test Harness + CI/CD
 
@@ -446,7 +446,7 @@ criteria, and test expectations. Update status as work progresses.
   - Run `make e2e` and verify passes.
 - Automated tests:
   - CI workflow runs e2e on PRs.
-- Status: Not started
+- Status: Done (e2e_smoke.sh starts Pi, checks /health, runs pytest + Android tests)
 
 ### P0-CICD — CI/CD pipelines
 - Priority: P0
@@ -457,7 +457,7 @@ criteria, and test expectations. Update status as work progresses.
   - Review workflow status in GitHub.
 - Automated tests:
   - CI required checks green.
-- Status: Not started
+- Status: Done (android_ci, pi_ci, contract_ci workflows)
 
 ### P1-ANDROID-RELEASE — Android release pipeline
 - Priority: P1
@@ -468,7 +468,7 @@ criteria, and test expectations. Update status as work progresses.
   - Trigger release workflow with test keystore.
 - Automated tests:
   - CI artifact upload step succeeds.
-- Status: Not started
+- Status: Done (android_release.yml with version input + artifact upload)
 
 ### P1-DEPLOY-PI — Pi deployment scripts
 - Priority: P1
@@ -479,4 +479,4 @@ criteria, and test expectations. Update status as work progresses.
   - Run `make deploy-pi HOST=...` and verify service status.
 - Automated tests:
   - CI lint checks scripts.
-- Status: Not started
+- Status: Done (install_pi_service.sh + update_pi_service.sh with systemd)

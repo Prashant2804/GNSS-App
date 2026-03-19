@@ -5,8 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gnssflow.app.db.AppDatabase
 import com.gnssflow.app.db.PointEntity
+import com.gnssflow.app.telemetry.ObservationRecorder
 import com.gnssflow.app.telemetry.TelemetryStore
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -22,19 +24,24 @@ data class ProjectDetailUiState(
     val autoCollectMinSeconds: Int = 5,
     val autoCollectMinDistanceM: Double = 1.0,
     val lastAutoCollectAtEpochMs: Long? = null,
+    val isRecordingObs: Boolean = false,
+    val obsEpochCount: Int = 0,
 )
 
 class ProjectDetailViewModel(app: Application) : AndroidViewModel(app) {
+    private val db = AppDatabase.get(app)
     private val repo: ProjectsRepository =
-        ProjectsRepository(
-            AppDatabase.get(app).projectDao(),
-            AppDatabase.get(app).pointDao(),
-        )
+        ProjectsRepository(db.projectDao(), db.pointDao())
+    private val obsDao = db.observationDao()
+    val obsRecorder = ObservationRecorder(obsDao)
 
     private var autoJob: Job? = null
     private var lastAutoAt: Long? = null
     private var lastAutoLat: Double? = null
     private var lastAutoLon: Double? = null
+
+    private val _obsRecording = MutableStateFlow(false)
+    private val _obsCount = MutableStateFlow(0)
 
     private val uiStateCache = LinkedHashMap<String, StateFlow<ProjectDetailUiState>>()
 
@@ -44,7 +51,15 @@ class ProjectDetailViewModel(app: Application) : AndroidViewModel(app) {
                 repo.observePoints(projectId),
                 repo.observeProject(projectId),
                 TelemetryStore.telemetry,
-            ) { points, project, telemetry ->
+                _obsRecording,
+                _obsCount,
+            ) { arr ->
+                @Suppress("UNCHECKED_CAST")
+                val points = arr[0] as List<PointEntity>
+                val project = arr[1] as com.gnssflow.app.db.ProjectEntity?
+                val telemetry = arr[2] as com.gnssflow.app.network.TelemetryDto?
+                val recording = arr[3] as Boolean
+                val count = arr[4] as Int
                 ProjectDetailUiState(
                     points = points,
                     canCollect = telemetry?.latitudeDeg != null && telemetry.longitudeDeg != null && telemetry.altitudeMSL != null,
@@ -52,6 +67,8 @@ class ProjectDetailViewModel(app: Application) : AndroidViewModel(app) {
                     autoCollectMinSeconds = project?.autoCollectMinSeconds ?: 5,
                     autoCollectMinDistanceM = project?.autoCollectMinDistanceM ?: 1.0,
                     lastAutoCollectAtEpochMs = lastAutoAt,
+                    isRecordingObs = recording,
+                    obsEpochCount = count,
                 )
             }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ProjectDetailUiState())
         }
@@ -135,9 +152,50 @@ class ProjectDetailViewModel(app: Application) : AndroidViewModel(app) {
         autoJob = null
     }
 
+    private var obsJob: Job? = null
+
+    fun toggleObsRecording(projectId: String) {
+        if (obsRecorder.isRecording(projectId)) {
+            obsRecorder.stopRecording(projectId)
+            _obsRecording.value = false
+            obsJob?.cancel()
+            obsJob = null
+        } else {
+            obsRecorder.startRecording(projectId)
+            _obsRecording.value = true
+            obsJob = viewModelScope.launch {
+                TelemetryStore.telemetry.filterNotNull().collect { t ->
+                    val raw = t.rawObservation ?: return@collect
+                    obsRecorder.onEpoch(projectId, raw)
+                    _obsCount.value = obsDao.countByProject(projectId)
+                }
+            }
+        }
+    }
+
+    fun generateRinex(projectId: String, callback: (String) -> Unit) {
+        viewModelScope.launch {
+            val epochs = obsDao.getByProject(projectId)
+            if (epochs.isEmpty()) {
+                callback("")
+                return@launch
+            }
+            val telemetry = TelemetryStore.telemetry.value
+            val rinex = RinexWriter.generate(
+                epochs = epochs,
+                markerName = "GNSSFLOW",
+                approxLat = telemetry?.latitudeDeg ?: 0.0,
+                approxLon = telemetry?.longitudeDeg ?: 0.0,
+                approxAlt = telemetry?.altitudeMSL ?: 0.0,
+            )
+            callback(rinex)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         stopAutoCollect()
+        obsJob?.cancel()
     }
 }
 

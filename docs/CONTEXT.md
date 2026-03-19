@@ -121,12 +121,25 @@ Pi pytest suite exists and should pass locally.
 
 ### Start Pi gateway
 
-From repo root:
+**Linux / macOS** — from repo root:
 
 ```bash
 cd pi
 source .venv/bin/activate
 PYTHONPATH=src python -m uvicorn gnss_gateway.main:app --reload --port 8000
+```
+
+**Windows (PowerShell)** — from repo root:
+
+```powershell
+cd pi
+# First time only: create venv and install deps
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+
+# Start gateway (PYTHONPATH so uvicorn finds gnss_gateway)
+$env:PYTHONPATH = "src"
+.\.venv\Scripts\python.exe -m uvicorn gnss_gateway.main:app --reload --port 8000
 ```
 
 Health check:
@@ -143,11 +156,25 @@ Expected:
 
 ### Run Android app
 
-From repo root:
+**macOS** — from repo root:
 
 ```bash
 cd android
 JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew clean installDebug
+```
+
+**Windows** — use Android Studio (recommended):
+
+1. Open the `android` folder in Android Studio.
+2. Wait for Gradle sync; start an emulator (AVD Manager).
+3. Run **Run → Run 'app'** to build and install on the emulator.
+
+Or from PowerShell (requires Android Studio’s JBR and working plugin resolution):
+
+```powershell
+cd android
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
+.\gradlew.bat installDebug
 ```
 
 Run unit tests:
@@ -165,7 +192,7 @@ rm -rf android/app/build/kspCaches
 
 ### Connect Android → Pi
 
-- Use base URL: `http://10.0.2.2:8000` (Android emulator → host loopback)
+- Use base URL: **`http://10.0.2.2:8000`** (Android emulator → host loopback; same on Windows and macOS)
 - Tap **Connect**
 - You should see telemetry values update periodically
 

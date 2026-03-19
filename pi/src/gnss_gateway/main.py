@@ -6,6 +6,17 @@ import asyncio
 from .ws_telemetry import build_mock_telemetry
 from .ntrip_client import NtripClient
 from .logging_sessions import start_logging, stop_logging
+from .raw_observations import (
+    start_recording,
+    stop_recording,
+    is_recording,
+    get_epochs,
+    clear_epochs,
+    add_epoch,
+    build_mock_raw_epoch,
+    epoch_to_dict,
+)
+from .rinex_writer import generate_rinex
 from .projects_store import (
     list_projects,
     create_project,
@@ -137,6 +148,39 @@ def projects_delete(project_id: str) -> JSONResponse:
     return JSONResponse({"deleted": True})
 
 
+@app.post("/observations/start")
+def obs_start() -> JSONResponse:
+    start_recording()
+    return JSONResponse({"recording": True})
+
+
+@app.post("/observations/stop")
+def obs_stop() -> JSONResponse:
+    stop_recording()
+    return JSONResponse({"recording": False, "epochCount": len(get_epochs())})
+
+
+@app.get("/observations/status")
+def obs_status() -> JSONResponse:
+    return JSONResponse({"recording": is_recording(), "epochCount": len(get_epochs())})
+
+
+@app.get("/observations/rinex")
+def obs_rinex(marker: str = "GNSSFLOW") -> JSONResponse:
+    epochs = get_epochs()
+    if not epochs:
+        raise HTTPException(status_code=404, detail="No observation epochs recorded")
+    rinex = generate_rinex(epochs, marker_name=marker)
+    from fastapi.responses import PlainTextResponse
+    return PlainTextResponse(content=rinex, media_type="text/plain")
+
+
+@app.delete("/observations")
+def obs_clear() -> JSONResponse:
+    clear_epochs()
+    return JSONResponse({"cleared": True})
+
+
 @app.websocket("/ws/telemetry")
 async def ws_telemetry(websocket: WebSocket) -> None:
     await websocket.accept()
@@ -144,5 +188,10 @@ async def ws_telemetry(websocket: WebSocket) -> None:
         telemetry = build_mock_telemetry(imu_enabled=_imu_enabled)
         telemetry["corrections"]["connected"] = _ntrip.connected
         telemetry["corrections"]["bytesPerSec"] = _ntrip.bytes_per_sec
+
+        raw_epoch = build_mock_raw_epoch()
+        add_epoch(raw_epoch)
+        telemetry["rawObservation"] = epoch_to_dict(raw_epoch)
+
         await websocket.send_json(telemetry)
         await asyncio.sleep(1)

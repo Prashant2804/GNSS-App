@@ -6,8 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [ProjectEntity::class, PointEntity::class, LineEntity::class, PolygonEntity::class],
-    version = 6,
+    entities = [ProjectEntity::class, PointEntity::class, LineEntity::class, PolygonEntity::class, ObservationEpochEntity::class],
+    version = 7,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -15,6 +15,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun pointDao(): PointDao
     abstract fun lineDao(): LineDao
     abstract fun polygonDao(): PolygonDao
+    abstract fun observationDao(): ObservationDao
 
     companion object {
         @Volatile private var instance: AppDatabase? = null

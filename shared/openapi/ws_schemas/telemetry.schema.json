@@ -33,5 +33,5 @@
     }
   },
   "required": ["fixQuality", "satellites", "latitudeDeg", "longitudeDeg", "altitudeMSL", "corrections"],
-  "additionalProperties": false
+  "additionalProperties": true
 }

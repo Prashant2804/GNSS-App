@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -49,12 +48,12 @@ class LinesViewModel(app: Application) : AndroidViewModel(app) {
             lines.observeByProject(projectId),
             selectedA,
             selectedB,
-            TelemetryStore.telemetry.filterNotNull(),
+            TelemetryStore.telemetry,
         ) { pts, ln, aId, bId, telemetry ->
             val a = pts.firstOrNull { it.id == aId }
             val b = pts.firstOrNull { it.id == bId }
-            val lat = telemetry.latitudeDeg
-            val lon = telemetry.longitudeDeg
+            val lat = telemetry?.latitudeDeg
+            val lon = telemetry?.longitudeDeg
 
             val so = if (a != null && b != null && lat != null && lon != null) {
                 val aN = 0.0

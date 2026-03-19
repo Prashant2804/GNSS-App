@@ -68,6 +68,7 @@ private class FakePointDao : com.gnssflow.app.db.PointDao {
     override fun observeByProject(projectId: String) = kotlinx.coroutines.flow.MutableStateFlow(emptyList<com.gnssflow.app.db.PointEntity>())
     override fun observeById(pointId: String) = kotlinx.coroutines.flow.MutableStateFlow<com.gnssflow.app.db.PointEntity?>(null)
     override suspend fun getLatestByProject(projectId: String): com.gnssflow.app.db.PointEntity? = null
+    override suspend fun getById(pointId: String): com.gnssflow.app.db.PointEntity? = null
     override suspend fun insert(entity: com.gnssflow.app.db.PointEntity) = Unit
 }
 

@@ -14,6 +14,9 @@ interface PointDao {
     @Query("SELECT * FROM points WHERE id = :pointId LIMIT 1")
     fun observeById(pointId: String): Flow<PointEntity?>
 
+    @Query("SELECT * FROM points WHERE id = :pointId LIMIT 1")
+    suspend fun getById(pointId: String): PointEntity?
+
     @Query("SELECT * FROM points WHERE projectId = :projectId ORDER BY createdAtEpochMs DESC LIMIT 1")
     suspend fun getLatestByProject(projectId: String): PointEntity?
 
